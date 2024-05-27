@@ -6,6 +6,9 @@ using Tuya.Net.Data.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using BerkutLampService;
+using FluentValidation;
+using Tuya.Net.Data;
+using BerkutLampService.Validators;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -23,6 +26,7 @@ var host = new HostBuilder()
             return client;
         });
         services.Configure<LampOptions>(host.Configuration.GetSection(nameof(LampOptions)));
+        services.AddScoped<IValidator<Device>, LampDeviceValidator>();
     })
     .Build();
 
