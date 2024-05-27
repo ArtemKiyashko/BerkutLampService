@@ -15,22 +15,22 @@ public class LampDeviceValidator : AbstractValidator<Device>
 
         RuleFor(x => x.IsOnline)
             .Cascade(CascadeMode.Stop)
-            .Must(p => p.HasValue).WithMessage("Berkut lamp online status is unknown")
-            .Must(p => p.Value).WithMessage("Berkut lamp is offline");
+            .Must(p => p.HasValue).WithMessage("Berkut lamp online status is unknown").WithErrorCode("LampNotFound")
+            .Must(p => p.Value).WithMessage("Berkut lamp is offline").WithErrorCode("LampOffline");
 
-        RuleFor(x => x.StatusList).NotNull().WithMessage("Cannot get status list");
+        RuleFor(x => x.StatusList).NotNull().WithMessage("Cannot get status list").WithErrorCode("StatusListNotFound");
 
         RuleFor(x => x.StatusList.FirstOrDefault(s => _options.LampStatusCode.Equals(s.Code, StringComparison.OrdinalIgnoreCase)))
             .Cascade(CascadeMode.Stop)
-            .NotNull().WithMessage("Cannot get lamp status")
-            .Must(p => p.Value is bool).WithMessage("Wrong lamp status");
+            .NotNull().WithMessage("Cannot get lamp status").WithErrorCode("LampStatusNotFound")
+            .Must(p => p.Value is bool).WithMessage("Wrong lamp status").WithErrorCode("WrongLampStatus");
     }
 
     protected override bool PreValidate(ValidationContext<Device> context, ValidationResult result)
     {
         if (context.InstanceToValidate == null)
         {
-            result.Errors.Add(new ValidationFailure("", "Cannot get lamp device"));
+            result.Errors.Add(new ValidationFailure("", "Cannot get lamp device") { ErrorCode = "LampDeviceNotFound" });
             return false;
         }
         return true;
