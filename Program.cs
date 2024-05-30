@@ -9,6 +9,9 @@ using BerkutLampService;
 using FluentValidation;
 using Tuya.Net.Data;
 using BerkutLampService.Validators;
+using BerkutLampService.Interfaces;
+using BerkutLampService.Repositories;
+using BerkutLampService.Managers;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -27,6 +30,8 @@ var host = new HostBuilder()
         });
         services.Configure<LampOptions>(host.Configuration.GetSection(nameof(LampOptions)));
         services.AddScoped<IValidator<Device>, LampDeviceValidator>();
+        services.AddScoped<IDeviceRepository, DeviceRepository>();
+        services.AddScoped<ILampManager, LampManager>();
     })
     .Build();
 
