@@ -7,4 +7,5 @@ public interface ILampManager
     Task<Device> GetBerkutLampAsync();
     Task<bool> BerkutLampToggleAsync(Device device);
     Task<bool> BerkutLampSetStateAsync(Device device, bool state);
+    bool BerkutLampGetState(Device device);
 }

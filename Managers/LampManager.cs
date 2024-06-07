@@ -18,6 +18,12 @@ public class LampManager : ILampManager
         _options = options.Value;
     }
 
+    public bool BerkutLampGetState(Device device)
+    {
+        var lampStatus = device.StatusList.First(s => _options.LampStatusCode.Equals(s.Code, StringComparison.OrdinalIgnoreCase));
+        return (bool)lampStatus.Value;
+    }
+
     public Task<bool> BerkutLampSetStateAsync(Device device, bool state) =>
         _deviceRepository.SendDeviceCommandAsync(device, new Command()
         {
@@ -28,7 +34,7 @@ public class LampManager : ILampManager
     public Task<bool> BerkutLampToggleAsync(Device device)
     {
         var lampStatus = device.StatusList.First(s => _options.LampStatusCode.Equals(s.Code, StringComparison.OrdinalIgnoreCase));
-        return BerkutLampSetStateAsync(device, !(bool)lampStatus.Value);
+        return BerkutLampSetStateAsync(device, !BerkutLampGetState(device));
     }
 
     public async Task<Device> GetBerkutLampAsync()

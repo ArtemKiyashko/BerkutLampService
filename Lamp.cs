@@ -1,4 +1,5 @@
 using BerkutLampService.Interfaces;
+using BerkutLampService.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -41,6 +42,22 @@ public class Lamp(ILogger<Lamp> logger, ILampManager lampManager)
             return new BadRequestObjectResult(ex.Message);
         }
         return new OkResult();
+    }
+
+    [Function("getstate")]
+    public async Task<IActionResult> GetState([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+    {
+        try
+        {
+            var lampDevice = await _lampManager.GetBerkutLampAsync();
+            var lampState = _lampManager.BerkutLampGetState(lampDevice);
+            return new OkObjectResult(new LampStateResponse() { State = lampState });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return new BadRequestObjectResult(ex.Message);
+        }
     }
 }
 
