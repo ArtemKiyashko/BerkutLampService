@@ -1,4 +1,5 @@
-﻿using BerkutLampService.Interfaces;
+﻿using System.Text.Json;
+using BerkutLampService.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 using Tuya.Net.Data;
@@ -21,7 +22,7 @@ public class LampManager : ILampManager
     public bool BerkutLampGetState(Device device)
     {
         var lampStatus = device.StatusList.First(s => _options.LampStatusCode.Equals(s.Code, StringComparison.OrdinalIgnoreCase));
-        return (bool)lampStatus.Value;
+        return lampStatus.Value is JsonElement element ? element.GetBoolean() : (bool)lampStatus.Value;
     }
 
     public Task<bool> BerkutLampSetStateAsync(Device device, bool state) =>
@@ -31,11 +32,7 @@ public class LampManager : ILampManager
             Value = state
         });
 
-    public Task<bool> BerkutLampToggleAsync(Device device)
-    {
-        var lampStatus = device.StatusList.First(s => _options.LampStatusCode.Equals(s.Code, StringComparison.OrdinalIgnoreCase));
-        return BerkutLampSetStateAsync(device, !BerkutLampGetState(device));
-    }
+    public Task<bool> BerkutLampToggleAsync(Device device) => BerkutLampSetStateAsync(device, !BerkutLampGetState(device));
 
     public async Task<Device> GetBerkutLampAsync()
     {

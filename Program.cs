@@ -12,6 +12,7 @@ using BerkutLampService.Validators;
 using BerkutLampService.Interfaces;
 using BerkutLampService.Repositories;
 using BerkutLampService.Managers;
+using BerkutLampService.Mappers;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -32,6 +33,7 @@ var host = new HostBuilder()
         services.AddScoped<IValidator<Device>, LampDeviceValidator>();
         services.AddScoped<IDeviceRepository, DeviceRepository>();
         services.AddScoped<ILampManager, LampManager>();
+        services.AddAutoMapper(typeof(MapperProfile));
     })
     .Build();
 
