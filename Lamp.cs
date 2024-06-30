@@ -74,9 +74,15 @@ public class Lamp(ILogger<Lamp> logger, ILampManager lampManager, IMapper mapper
             throw new ArgumentException("Cannot read device data");
 
         var tuyaDevice = _mapper.Map<Tuya.Net.Data.Device>(deviceData);
-        var lampStatus = _lampManager.BerkutLampGetState(tuyaDevice);
-
-        return new SignalRMessageAction("lampstatuschanged", [new LampStatusMessage(lampStatus)]);
+        try
+        {
+            var lampStatus = _lampManager.BerkutLampGetState(tuyaDevice);
+            return new SignalRMessageAction("lampstatuschanged", [new LampStatusMessage(lampStatus)]);
+        }
+        catch (Exception)
+        { 
+            return default; 
+        }
     }
 
     [Function("negotiate")]

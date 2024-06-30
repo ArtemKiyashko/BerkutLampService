@@ -21,6 +21,9 @@ public class LampManager : ILampManager
 
     public bool BerkutLampGetState(Device device)
     {
+        if (!_options.LampDeviceId.Equals(device.Id, StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException($"Wrong device id: {device.Id}", nameof(device));
+
         var lampStatus = device.StatusList.First(s => _options.LampStatusCode.Equals(s.Code, StringComparison.OrdinalIgnoreCase));
         return lampStatus.Value is JsonElement element ? element.GetBoolean() : (bool)lampStatus.Value;
     }
